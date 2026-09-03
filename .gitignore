@@ -1,0 +1,21 @@
+# Xcode
+build/
+DerivedData/
+
+## User settings
+xcuserdata/
+*.xcuserstate
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SPM
+.build/
+
+# macOS
+.DS_Store
