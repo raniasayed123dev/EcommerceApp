@@ -11,7 +11,7 @@ import SwiftUI
 struct OnBoardingView: View {
 
     @State private var currentPage = 0
-
+    @State private var showSplash2  : Bool = false
     var body: some View {
         ZStack {
 
@@ -78,6 +78,9 @@ struct OnBoardingView: View {
                                                 currentPage += 1
                                             }
                                         }
+                                        else {
+                                            showSplash2 = true
+                                        }
 
                                     } label: {
 
@@ -99,7 +102,12 @@ struct OnBoardingView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            if showSplash2 {
+                SplashScreen2View()
+                    .transition(.move(edge: .trailing))
+            }
         }
+        .animation(.easeInOut(duration: 0.4), value: showSplash2)
     }
 }
 
