@@ -26,8 +26,8 @@ struct AccountSuccessView: View {
                     .foregroundStyle(Color.black.opacity(0.6))
                     .multilineTextAlignment(.center)
                 Spacer()
-                NavigationLink {
-                    HomeView()
+                Button {
+                    SessionManager.shared.completeRegistration()
                 } label: {
                     Text("Start Shopping")
                         .font(.headline)
@@ -43,6 +43,7 @@ struct AccountSuccessView: View {
            .padding(.bottom , 100)
             .padding(.horizontal , 40)
         }
+        .navigationBarBackButtonHidden(true)
         
     }
 }

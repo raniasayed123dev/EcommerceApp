@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "fashion.jpg",
+      "filename" : "image 90-2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "fashion 1.jpg",
+      "filename" : "image 90-2 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "fashion 2.jpg",
+      "filename" : "image 90-2 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

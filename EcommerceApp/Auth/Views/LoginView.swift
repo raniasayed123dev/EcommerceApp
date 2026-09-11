@@ -4,122 +4,132 @@
 //
 //  Created by rania on 03/09/2026.
 //
+
 import SwiftUI
 
 struct LoginView: View {
-    
+
     @State private var email = ""
     @State private var password = ""
     @State private var selectedButton = "Log In"
-    @State private var  isLoginPressed : Bool = false
-    @State private var navigateToHome = false
     @Environment(\.dismiss) private var dismiss
-    
+    @State private var authViewModel = AuthViewModel()
+
+    private var isLoginValid: Bool {
+        AuthValidator.validateEmail(email) == nil &&
+        !password.isEmpty
+    }
+
     var body: some View {
-        
         ZStack {
-            
             Color.white
                 .ignoresSafeArea()
-            
+
             ScrollView {
-                
                 VStack {
-                    
+
                     // Back Button
                     HStack {
-                        
-                        Button {
+                        BackButton {
                             dismiss()
-                        } label: {
-                            ZStack {
-                                
-                                Circle()
-                                    .fill(.black)
-                                    .frame(width: 45, height: 45)
-                                
-                                Image("backButtonArrow")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 20, height: 20)
-                            }
                         }
-                        
+
                         Spacer()
                     }
                     .padding(.horizontal, 10)
-                    
+
                     // Logo
                     Image("logoImage2")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 136, height: 83)
-                    
+
                     // Login Content
                     VStack(alignment: .leading, spacing: 10) {
-                        
+
                         Text("Welcome Back")
                             .font(.title3)
                             .bold()
                             .foregroundStyle(.black)
-                        
+
                         Text("please login or sign up to continue our app")
                             .font(.subheadline)
                             .foregroundStyle(.gray)
-                        
+
                         Spacer()
                             .frame(height: 50)
-                        
+
                         AuthTextField(
                             title: "Email",
                             placeholder: "Enter your email",
                             isSecure: false,
                             text: $email
                         )
-                        
+
                         Rectangle()
                             .foregroundStyle(.gray)
                             .frame(height: 0.3)
-                        
+
                         AuthTextField(
                             title: "Password",
                             placeholder: "Enter your Password",
                             isSecure: true,
                             text: $password
                         )
-                        
+
                         Rectangle()
                             .foregroundStyle(.gray)
                             .frame(height: 0.3)
-                        
+
+                        if !authViewModel.errorMessage.isEmpty {
+                            Text(authViewModel.errorMessage)
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                                .frame(
+                                    maxWidth: .infinity,
+                                    alignment: .leading
+                                )
+                        }
+
                         Spacer()
+
+                        // Login Button
                         Button {
-                            isLoginPressed = true
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                                navigateToHome = true
+
+                            let isValid = authViewModel.validateLogin(
+                                email: email,
+                                password: password
+                            )
+
+                            if !isValid {
+                                return
                             }
+
+                            Task {
+                                let success = await authViewModel.login(
+                                    email: email,
+                                    password: password
+                                )
+
+                                if success {
+                                    SessionManager.shared.completeLogin()
+                                }
+                            }
+
                         } label: {
                             Text("Login")
                                 .font(.headline)
-                                .foregroundStyle(
-                                    isLoginPressed ? .white : .black
-                                )
+                                .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(
-                                    isLoginPressed ? .black : .white
-                                )
+                                .background(.black)
                                 .clipShape(
                                     RoundedRectangle(cornerRadius: 30)
                                 )
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 30)
-                                        .stroke(.black, lineWidth: 1)
-                                }
                         }
-                        
-                    
+                        .disabled(!isLoginValid)
+                        .opacity(isLoginValid ? 1 : 0.5)
+
                         Rectangle()
                             .foregroundStyle(.gray)
                             .frame(height: 0.3)
@@ -127,7 +137,7 @@ struct LoginView: View {
                                 Text("or")
                                     .font(.title2)
                             }
-                        
+
                         AuthButton(
                             title: "Continue with Facebook",
                             backgroundColor: selectedButton == "Continue with Facebook"
@@ -140,7 +150,7 @@ struct LoginView: View {
                         ) {
                             selectedButton = "Continue with Facebook"
                         }
-                        
+
                         AuthButton(
                             title: "Continue with Google",
                             backgroundColor: selectedButton == "Continue with Google"
@@ -153,7 +163,7 @@ struct LoginView: View {
                         ) {
                             selectedButton = "Continue with Google"
                         }
-                        
+
                         AuthButton(
                             title: "Continue with Apple",
                             backgroundColor: selectedButton == "Continue with Apple"
@@ -173,12 +183,6 @@ struct LoginView: View {
                 .padding(.top, 10)
                 .padding(.bottom, 40)
             }
-            .navigationDestination(isPresented: $navigateToHome) {
-                HomeView()
-            }
-            .onAppear {
-                isLoginPressed = false
-            }
             .frame(maxWidth: .infinity)
         }
         .padding(.top, 20)
@@ -189,4 +193,3 @@ struct LoginView: View {
 #Preview {
     LoginView()
 }
-

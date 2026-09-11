@@ -79,6 +79,7 @@ struct OnBoardingView: View {
                                             }
                                         }
                                         else {
+                                            SessionManager.shared.hasCompletedOnboarding = true
                                             showSplash2 = true
                                         }
 
