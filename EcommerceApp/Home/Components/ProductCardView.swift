@@ -1,34 +1,26 @@
-//
-//  ProductCardView.swift
-//  EcommerceApp
-//
-//  Created by rania on 10/09/2026.
-//
-
 import SwiftUI
 
 struct ProductCardView: View {
-    
+
     let imageName: String
     let productName: String
     let description: String
-    let price: String
-    
+    let price: Double
+
     var body: some View {
+
         VStack(alignment: .center) {
-            
+
             ZStack(alignment: .topTrailing) {
-                
+
                 Image(imageName)
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: 150)
-                    //.frame(maxHeight: .infinity)
-                        .background(.white)
-                                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                
+                    .background(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 30))
+
                 Button {
-                    
                 } label: {
                     Image(systemName: "heart")
                         .foregroundStyle(.white)
@@ -38,17 +30,17 @@ struct ProductCardView: View {
                 }
                 .padding(20)
             }
-            
+
             Text(productName)
                 .font(.headline)
                 .foregroundStyle(.black)
-            
+
             Text(description)
                 .font(.subheadline)
                 .foregroundStyle(.gray)
                 .lineLimit(2)
-            
-            Text(price)
+
+            Text("\(price, specifier: "%.0f") $")
                 .font(.headline)
                 .foregroundStyle(.black)
         }
@@ -60,7 +52,7 @@ struct ProductCardView: View {
         imageName: "productImage1",
         productName: "Classic Jacket",
         description: "Irregular Rib Skirt",
-        price: "$120"
+        price: 120
     )
     .padding()
 }
