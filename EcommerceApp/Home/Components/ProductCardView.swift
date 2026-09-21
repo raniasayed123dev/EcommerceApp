@@ -6,7 +6,9 @@ struct ProductCardView: View {
     let productName: String
     let description: String
     let price: Double
-
+    let onHeartTapped: () -> Void
+    let isFavorite: Bool
+    
     var body: some View {
 
         VStack(alignment: .center) {
@@ -15,35 +17,40 @@ struct ProductCardView: View {
 
                 Image(imageName)
                     .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 150)
-                    .background(.white)
+                    .scaledToFill()
+                    .frame(width: 160, height: 190)
+                    .clipped()
+                    .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 30))
 
                 Button {
+                    onHeartTapped()
                 } label: {
-                    Image(systemName: "heart")
-                        .foregroundStyle(.white)
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle( .white)
                         .frame(width: 25, height: 25)
-                        .background(.black)
+                        .background( Color.black)
                         .clipShape(Circle())
                 }
-                .padding(20)
+                .padding(15)
             }
+            .frame(width: 160, height: 190)
 
             Text(productName)
                 .font(.headline)
                 .foregroundStyle(.black)
+                .lineLimit(1)
 
             Text(description)
                 .font(.subheadline)
                 .foregroundStyle(.gray)
-                .lineLimit(2)
+                .lineLimit(1)
 
             Text("\(price, specifier: "%.0f") $")
                 .font(.headline)
                 .foregroundStyle(.black)
         }
+        .frame(width: 160)
     }
 }
 
@@ -52,7 +59,8 @@ struct ProductCardView: View {
         imageName: "productImage1",
         productName: "Classic Jacket",
         description: "Irregular Rib Skirt",
-        price: 120
+        price: 120 ,
+        onHeartTapped: {}, isFavorite: false
     )
     .padding()
 }

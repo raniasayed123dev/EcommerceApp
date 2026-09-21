@@ -1,33 +1,43 @@
-//
-//  MainTabView.swift
-//  EcommerceApp
-//
-//  Created by rania on 10/09/2026.
-//
-
 
 import SwiftUI
 import FirebaseAuth
 
 struct MainTabView: View {
-    
+
     @State private var selectedTab: AppTab = .home
-    
+    @State private var wishlistViewModel = WishlistViewModel()
+    @State private var cartViewModel = CartViewModel()
+
     var body: some View {
+
         ZStack(alignment: .bottom) {
+
             Group {
                 switch selectedTab {
+
                 case .home:
-                    HomeView()
+                    HomeView {
+                        selectedTab = .cart
+                    }
 
                 case .wishlist:
-                    Text("Wishlist")
+                    WishlistView(
+                        goBack: {
+                            selectedTab = .home
+                        },
+                        onCartTapped: {
+                            selectedTab = .cart
+                        }
+                    )
 
                 case .cart:
-                    Text("Cart")
+                    CartView {
+                        selectedTab = .home
+                    }
 
                 case .profile:
                     VStack(spacing: 16) {
+
                         Spacer()
 
                         Image(systemName: "person.crop.circle.fill")
@@ -35,7 +45,9 @@ struct MainTabView: View {
                             .foregroundStyle(.black)
 
                         if let user = SessionManager.shared.currentUser {
-                            if let displayName = user.displayName, !displayName.isEmpty {
+
+                            if let displayName = user.displayName,
+                               !displayName.isEmpty {
                                 Text(displayName)
                                     .font(.title2)
                                     .bold()
@@ -51,8 +63,13 @@ struct MainTabView: View {
                         Button(role: .destructive) {
                             SessionManager.shared.signOut()
                         } label: {
+
                             HStack {
-                                Image(systemName: "rectangle.portrait.and.arrow.right")
+                                Image(
+                                    systemName:
+                                        "rectangle.portrait.and.arrow.right"
+                                )
+
                                 Text("Sign Out")
                             }
                             .font(.headline)
@@ -60,7 +77,9 @@ struct MainTabView: View {
                             .padding(.horizontal, 30)
                             .padding(.vertical, 14)
                             .background(Color(.systemGray6))
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 20)
+                            )
                         }
                         .padding(.top, 20)
 
@@ -69,17 +88,20 @@ struct MainTabView: View {
                     .padding()
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(
+                maxWidth: .infinity,
+                maxHeight: .infinity
+            )
 
             CustomTabBar(selectedTab: $selectedTab)
                 .frame(maxWidth: .infinity)
         }
         .ignoresSafeArea(edges: .bottom)
+        .environment(wishlistViewModel)
+        .environment(cartViewModel)
     }
 }
 
 #Preview {
     MainTabView()
 }
-
-

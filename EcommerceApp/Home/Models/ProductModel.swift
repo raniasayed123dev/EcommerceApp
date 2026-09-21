@@ -7,27 +7,27 @@
 
 import Foundation
 
-enum ProductColor {
-    case black
-    case white
-    case beige
-    case brown
-    case gold
-    case silver
-    case blue
+enum ProductColor: String {
+    case black = "Black"
+    case white = "White"
+    case beige = "Beige"
+    case brown = "Brown"
+    case gold = "Gold"
+    case silver = "Silver"
+    case blue = "Blue"
 }
 
-enum ProductSize {
-    case small
-    case medium
-    case large
-    case extraLarge
-    case size38
-    case size39
-    case size40
-    case size41
-    case size42
-    case oneSize
+enum ProductSize: String {
+    case small = "S"
+    case medium = "M"
+    case large = "L"
+    case extraLarge = "XL"
+    case size38 = "38"
+    case size39 = "39"
+    case size40 = "40"
+    case size41 = "41"
+    case size42 = "42"
+    case oneSize = "One Size"
 }
 
 struct ProductModel: Identifiable {

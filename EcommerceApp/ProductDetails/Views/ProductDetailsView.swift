@@ -2,25 +2,30 @@
 import SwiftUI
 
 struct ProductDetailsView: View {
-
+    
     let product: ProductModel
-
+    let onCartTapped: () -> Void
+    
     @Environment(\.dismiss) private var dismiss
-
+    @Environment(CartViewModel.self) private var cartViewModel
+    @Environment(WishlistViewModel.self) private var wishlistViewModel
+    
     @State private var quantity = 1
     @State private var selectedColor: ProductColor?
     @State private var selectedSize: ProductSize?
-
+    @State private var showSelectionAlert = false
+    @State private var showAddedAlert = false
+    
     var body: some View {
-
+        
         GeometryReader { geometry in
-
+            
             let imageHeight = geometry.size.height * 0.5
             let panelHeight = geometry.size.height * 0.54
             let topPadding = geometry.size.height * 0.04
-
+            
             ZStack(alignment: .top) {
-
+                
                 Image(product.imageName)
                     .resizable()
                     .scaledToFill()
@@ -29,20 +34,22 @@ struct ProductDetailsView: View {
                         height: imageHeight
                     )
                     .clipped()
-
+                
                 HStack {
-
+                    
                     BackButton {
                         dismiss()
                     }
                     .padding(.leading, geometry.size.width * 0.05)
                     .padding(.top, topPadding)
-
+                    
                     Spacer()
-
+                    
                     Button {
+                        dismiss()
+                           onCartTapped()
                     } label: {
-
+                        
                         Image("cartIcon2")
                             .resizable()
                             .scaledToFit()
@@ -60,32 +67,38 @@ struct ProductDetailsView: View {
                     .padding(.trailing, geometry.size.width * 0.05)
                     .padding(.top, topPadding)
                 }
-
+                
                 VStack {
-
+                    
                     Spacer()
-
+                    
                     HStack {
-
+                        
                         Spacer()
-
+                        
                         Button {
+                            wishlistViewModel.toggleProduct(product)
                         } label: {
-
-                            Image("loveIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(
-                                    width: geometry.size.width * 0.10,
-                                    height: geometry.size.width * 0.10
+                            Image(
+                                systemName: wishlistViewModel.isFavorite(product)
+                                ? "heart.fill"
+                                : "heart"
+                            )
+                            .foregroundStyle(.white)
+                            .font(
+                                .system(
+                                    size: geometry.size.width * 0.055,
+                                    weight: .semibold
                                 )
-                                .frame(
-                                    width: geometry.size.width * 0.12,
-                                    height: geometry.size.width * 0.12
-                                )
-                                .background(.white)
-                                .clipShape(Circle())
+                            )
+                            .frame(
+                                width: geometry.size.width * 0.12,
+                                height: geometry.size.width * 0.12
+                            )
+                            .background(.black)
+                            .clipShape(Circle())
                         }
+                   
                         .padding(.trailing, geometry.size.width * 0.05)
                     }
                     .padding(.bottom, geometry.size.height * 0.05)
@@ -94,54 +107,54 @@ struct ProductDetailsView: View {
                     width: geometry.size.width,
                     height: imageHeight
                 )
-
+                
                 VStack {
-
+                    
                     Spacer()
                     
                     
                     
                     VStack(spacing: 0) {
-
+                        
                         ScrollView(showsIndicators: false) {
-
+                            
                             VStack(spacing: 0) {
-
+                                
                                 HStack(alignment: .top) {
-
+                                    
                                     VStack(
                                         alignment: .leading,
                                         spacing: 6
                                     ) {
-
+                                        
                                         Text(product.productName)
                                             .font(.system(
                                                 size: geometry.size.width * 0.055,
                                                 weight: .semibold
                                             ))
                                             .foregroundStyle(.black)
-
+                                        
                                         Text(product.description)
                                             .font(.system(
                                                 size: geometry.size.width * 0.035
                                             ))
                                             .foregroundStyle(.gray)
                                     }
-
+                                    
                                     Spacer()
-
+                                    
                                     HStack(
                                         spacing: geometry.size.width * 0.03
                                     ) {
-
+                                        
                                         Button {
-
+                                            
                                             if quantity > 1 {
                                                 quantity -= 1
                                             }
-
+                                            
                                         } label: {
-
+                                            
                                             Text("−")
                                                 .font(.system(
                                                     size: geometry.size.width * 0.045,
@@ -152,7 +165,7 @@ struct ProductDetailsView: View {
                                                     height: geometry.size.width * 0.08
                                                 )
                                         }
-
+                                        
                                         Text("\(quantity)")
                                             .font(.system(
                                                 size: geometry.size.width * 0.04,
@@ -162,13 +175,13 @@ struct ProductDetailsView: View {
                                                 width: geometry.size.width * 0.06,
                                                 height: geometry.size.width * 0.08
                                             )
-
+                                        
                                         Button {
-
+                                            
                                             quantity += 1
-
+                                            
                                         } label: {
-
+                                            
                                             Text("+")
                                                 .font(.system(
                                                     size: geometry.size.width * 0.045,
@@ -198,18 +211,18 @@ struct ProductDetailsView: View {
                                 }
                                 .padding(.horizontal, geometry.size.width * 0.06)
                                 .padding(.top, geometry.size.height * 0.035)
-
+                                
                                 HStack(spacing: 6) {
-
+                                    
                                     ForEach(0..<5, id: \.self) { _ in
-
+                                        
                                         Image(systemName: "star.fill")
                                             .font(.system(
                                                 size: geometry.size.width * 0.035
                                             ))
                                             .foregroundStyle(.orange)
                                     }
-
+                                    
                                     Text("(\(product.reviewsCount) Reviews)")
                                         .font(.system(
                                             size: geometry.size.width * 0.032
@@ -222,36 +235,36 @@ struct ProductDetailsView: View {
                                 )
                                 .padding(.horizontal, geometry.size.width * 0.06)
                                 .padding(.top, geometry.size.height * 0.02)
-
+                                
                                 VStack(
                                     alignment: .leading,
                                     spacing: geometry.size.height * 0.02
                                 ) {
-
+                                    
                                     if !product.colors.isEmpty {
-
+                                        
                                         HStack(
                                             spacing: geometry.size.width * 0.04
                                         ) {
-
+                                            
                                             Text("Color")
                                                 .font(.system(
                                                     size: geometry.size.width * 0.035,
                                                     weight: .medium
                                                 ))
                                                 .foregroundStyle(.black)
-
+                                            
                                             HStack(
                                                 spacing: geometry.size.width * 0.025
                                             ) {
-
+                                                
                                                 ForEach(
                                                     product.colors.indices,
                                                     id: \.self
                                                 ) { index in
-
+                                                    
                                                     if product.colors.count == 1 {
-
+                                                        
                                                         Circle()
                                                             .fill(
                                                                 colorForProductColor(
@@ -263,7 +276,7 @@ struct ProductDetailsView: View {
                                                                 height: geometry.size.width * 0.075
                                                             )
                                                             .overlay {
-
+                                                                
                                                                 Circle()
                                                                     .stroke(
                                                                         product.colors[index] == .white
@@ -272,16 +285,16 @@ struct ProductDetailsView: View {
                                                                         lineWidth: 1
                                                                     )
                                                             }
-
+                                                        
                                                     } else {
-
+                                                        
                                                         Button {
-
+                                                            
                                                             selectedColor =
-                                                                product.colors[index]
-
+                                                            product.colors[index]
+                                                            
                                                         } label: {
-
+                                                            
                                                             Circle()
                                                                 .fill(
                                                                     colorForProductColor(
@@ -293,7 +306,7 @@ struct ProductDetailsView: View {
                                                                     height: geometry.size.width * 0.075
                                                                 )
                                                                 .overlay {
-
+                                                                    
                                                                     Circle()
                                                                         .stroke(
                                                                             product.colors[index] == .white
@@ -303,7 +316,7 @@ struct ProductDetailsView: View {
                                                                         )
                                                                 }
                                                                 .overlay {
-
+                                                                    
                                                                     Circle()
                                                                         .stroke(
                                                                             selectedColor == product.colors[index]
@@ -320,8 +333,8 @@ struct ProductDetailsView: View {
                                                                 .shadow(
                                                                     color:
                                                                         selectedColor == product.colors[index]
-                                                                        ? .black.opacity(0.2)
-                                                                        : .clear,
+                                                                    ? .black.opacity(0.2)
+                                                                    : .clear,
                                                                     radius: 3
                                                                 )
                                                         }
@@ -330,27 +343,27 @@ struct ProductDetailsView: View {
                                             }
                                         }
                                     }
-
+                                    
                                     if !product.sizes.isEmpty {
-
+                                        
                                         HStack(
                                             spacing: geometry.size.width * 0.04
                                         ) {
-
+                                            
                                             Text("Size")
                                                 .font(.system(
                                                     size: geometry.size.width * 0.035,
                                                     weight: .medium
                                                 ))
                                                 .foregroundStyle(.black)
-
+                                            
                                             HStack(
                                                 spacing: geometry.size.width * 0.025
                                             ) {
-
+                                                
                                                 if product.sizes.count == 1 &&
                                                     product.sizes.first == .oneSize {
-
+                                                    
                                                     Text("One Size")
                                                         .font(.system(
                                                             size: geometry.size.width * 0.03,
@@ -367,7 +380,7 @@ struct ProductDetailsView: View {
                                                         )
                                                         .background(.white)
                                                         .overlay {
-
+                                                            
                                                             RoundedRectangle(
                                                                 cornerRadius:
                                                                     geometry.size.width * 0.025
@@ -383,21 +396,21 @@ struct ProductDetailsView: View {
                                                                     geometry.size.width * 0.025
                                                             )
                                                         )
-
+                                                    
                                                 } else {
-
+                                                    
                                                     ForEach(
                                                         product.sizes.indices,
                                                         id: \.self
                                                     ) { index in
-
+                                                        
                                                         Button {
-
+                                                            
                                                             selectedSize =
-                                                                product.sizes[index]
-
+                                                            product.sizes[index]
+                                                            
                                                         } label: {
-
+                                                            
                                                             Text(
                                                                 sizeName(
                                                                     product.sizes[index]
@@ -424,7 +437,7 @@ struct ProductDetailsView: View {
                                                                 : Color.white
                                                             )
                                                             .overlay {
-
+                                                                
                                                                 Circle()
                                                                     .stroke(
                                                                         .gray.opacity(0.4),
@@ -441,9 +454,9 @@ struct ProductDetailsView: View {
                                                             .shadow(
                                                                 color:
                                                                     selectedSize ==
-                                                                    product.sizes[index]
-                                                                    ? .black.opacity(0.2)
-                                                                    : .clear,
+                                                                product.sizes[index]
+                                                                ? .black.opacity(0.2)
+                                                                : .clear,
                                                                 radius: 3
                                                             )
                                                         }
@@ -459,19 +472,19 @@ struct ProductDetailsView: View {
                                 )
                                 .padding(.horizontal, geometry.size.width * 0.06)
                                 .padding(.top, geometry.size.height * 0.025)
-
+                                
                                 VStack(
                                     alignment: .leading,
                                     spacing: 8
                                 ) {
-
+                                    
                                     Text("Description")
                                         .font(.system(
                                             size: geometry.size.width * 0.04,
                                             weight: .semibold
                                         ))
                                         .foregroundStyle(.black)
-
+                                    
                                     Text(
                                         "This product is made with high quality materials and designed to provide a comfortable and stylish look for everyday use."
                                     )
@@ -480,7 +493,7 @@ struct ProductDetailsView: View {
                                     ))
                                     .foregroundStyle(.gray)
                                     .lineSpacing(3)
-                                   
+                                    
                                 }
                                 .frame(
                                     maxWidth: .infinity,
@@ -492,21 +505,21 @@ struct ProductDetailsView: View {
                             }
                         }
                         
-
+                        
                         HStack(alignment: .center) {
-
+                            
                             VStack(
                                 alignment: .leading,
                                 spacing: 4
                             ) {
-
+                                
                                 Text("Total Price")
                                     .font(.system(
                                         size: geometry.size.width * 0.03,
                                         weight: .medium
                                     ))
                                     .foregroundStyle(.gray)
-
+                                
                                 Text(
                                     "\(product.price * Double(quantity), specifier: "%.0f $")"
                                 )
@@ -516,17 +529,37 @@ struct ProductDetailsView: View {
                                 ))
                                 .foregroundStyle(.black)
                             }
-
+                            
                             Spacer()
-
                             Button {
 
-                            } label: {
+                                let needsColor = !product.colors.isEmpty
+                                let needsSize = !product.sizes.isEmpty
 
+                                if needsColor && selectedColor == nil {
+                                    showSelectionAlert = true
+                                } else if needsSize && selectedSize == nil {
+                                    showSelectionAlert = true
+                                } else {
+
+                                    cartViewModel.addItem(
+                                        product: product,
+                                        color: selectedColor,
+                                        size: selectedSize,
+                                        quantity: quantity
+                                    )
+
+                                    showAddedAlert = true
+                                }
+
+                            }
+                           
+                             label: {
+                                
                                 HStack(
                                     spacing: geometry.size.width * 0.05
                                 ) {
-
+                                    
                                     Image("cartIcon1")
                                         .resizable()
                                         .scaledToFit()
@@ -534,7 +567,7 @@ struct ProductDetailsView: View {
                                             width: geometry.size.width * 0.05,
                                             height: geometry.size.width * 0.05
                                         )
-
+                                    
                                     Text("Add to Cart")
                                         .font(.system(
                                             size: geometry.size.width * 0.035,
@@ -563,9 +596,9 @@ struct ProductDetailsView: View {
                         .padding(.bottom, geometry.safeAreaInsets.bottom + 30)
                         .background(.white)
                     }
-                   
-
-                   
+                    
+                    
+                    
                     .frame(
                         width: geometry.size.width,
                         height: panelHeight
@@ -591,84 +624,91 @@ struct ProductDetailsView: View {
             )
         }
         .ignoresSafeArea()
-       .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(true)
+        .alert("Selection Required", isPresented: $showSelectionAlert) {
+            Button("OK", role: .cancel) {
+            }
+        } message: {
+            Text("Please select the required options before adding the product to your cart.")
+        }
+        .alert("Added to Cart", isPresented: $showAddedAlert) {
+            Button("OK", role: .cancel) {
+            }
+        } message: {
+            Text("The product has been added to your cart.")
+        }
     }
-
+    
     private func colorForProductColor(
         _ color: ProductColor
     ) -> Color {
-
         switch color {
-
         case .black:
             return .black
-
         case .white:
             return .white
-
         case .beige:
             return Color(
                 red: 0.85,
                 green: 0.78,
                 blue: 0.65
             )
-
         case .brown:
             return .brown
-
         case .gold:
             return .yellow
-
         case .silver:
             return .gray
-
         case .blue:
             return .blue
         }
     }
-
+    
     private func sizeName(
         _ size: ProductSize
     ) -> String {
-
         switch size {
-
         case .small:
             return "S"
-
         case .medium:
             return "M"
-
         case .large:
             return "L"
-
         case .extraLarge:
             return "XL"
-
         case .size38:
             return "38"
-
         case .size39:
             return "39"
-
         case .size40:
             return "40"
-
         case .size41:
             return "41"
-
         case .size42:
             return "42"
-
         case .oneSize:
             return "One Size"
         }
     }
 }
-
 #Preview {
-    
     ProductDetailsView(
-        product: ProductData.products[3]
+        product: ProductModel(
+            imageName: "productImage4",
+            productName: "Classic Jacket",
+            description: "Elegant classic jacket",
+            price: 120,
+            category: .women,
+            isNewArrival: true,
+            images: ["productImage4"],
+            colors: [.black, .white, .beige],
+            sizes: [.small, .medium, .large],
+            rating: 4.5,
+            reviewsCount: 20
+        ),
+        onCartTapped: {
+        }
     )
+    .environment(CartViewModel())
+    .environment(WishlistViewModel())
 }

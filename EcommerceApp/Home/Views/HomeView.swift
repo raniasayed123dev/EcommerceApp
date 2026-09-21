@@ -2,10 +2,13 @@ import SwiftUI
 
 struct HomeView: View {
 
+    var onCartTapped: (() -> Void)? = nil
+
     @State private var selectedProduct: ProductModel?
     @State private var searchText = ""
     @State private var showFilter = false
     @State private var selectedCategory = "New Arrivals"
+    @Environment(WishlistViewModel.self) private var wishlistViewModel
 
     let categories = [
         "New Arrivals",
@@ -83,7 +86,11 @@ struct HomeView: View {
                                         imageName: product.imageName,
                                         productName: product.productName,
                                         description: product.description,
-                                        price: product.price
+                                        price: product.price,
+                                        
+                                        onHeartTapped: {
+                                            wishlistViewModel.toggleProduct(product)}, isFavorite: wishlistViewModel.isFavorite(product)
+                                        
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -96,11 +103,16 @@ struct HomeView: View {
                                 Button {
                                     selectedProduct = product
                                 } label: {
+                                    
                                     ProductCardView(
                                         imageName: product.imageName,
                                         productName: product.productName,
                                         description: product.description,
-                                        price: product.price
+                                        price: product.price,
+                                        
+                                        onHeartTapped: {
+                                            wishlistViewModel.toggleProduct(product)}, isFavorite: wishlistViewModel.isFavorite(product)
+                                        
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -117,7 +129,12 @@ struct HomeView: View {
             .padding(.top, 20)
         }
         .fullScreenCover(item: $selectedProduct) { product in
-            ProductDetailsView(product: product)
+            ProductDetailsView(
+                product: product,
+                onCartTapped: {
+                    onCartTapped?()
+                }
+            )
         }
     }
 }
