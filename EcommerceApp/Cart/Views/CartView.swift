@@ -112,17 +112,15 @@ struct CartView: View {
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.white)
                             .padding(.horizontal, 20)
-                            .padding(.top, item.id == viewModel.items.first?.id ? 15 : 0)
+                            .padding(.top, item.id == viewModel.items.first?.id ? 8 : 0)
                             .padding(.bottom, 15)
                         }
 
-                        VStack(spacing: 15) {
-                            HStack {
+                        HStack(spacing: 15) {
+                            VStack(spacing : 4) {
                                 Text("Total Price")
                                     .font(.headline)
                                     .foregroundStyle(.gray)
-
-                                Spacer()
 
                                 Text(
                                     "\(viewModel.totalPrice, specifier: "%.0f") $"

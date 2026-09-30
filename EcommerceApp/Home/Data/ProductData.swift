@@ -34,7 +34,7 @@ enum ProductData {
             isNewArrival: false,
             images: ["accessory2", "accessory2", "accessory2"],
             colors: [.black, .brown],
-            sizes: [.oneSize],
+            sizes: [.large],
             rating: 4.6,
             reviewsCount: 89
         ),

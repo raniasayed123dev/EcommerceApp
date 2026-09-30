@@ -7,6 +7,7 @@ struct MainTabView: View {
     @State private var selectedTab: AppTab = .home
     @State private var wishlistViewModel = WishlistViewModel()
     @State private var cartViewModel = CartViewModel()
+    @State private var showTabBar = true
 
     var body: some View {
 
@@ -16,7 +17,7 @@ struct MainTabView: View {
                 switch selectedTab {
 
                 case .home:
-                    HomeView {
+                    HomeView(showTabBar: $showTabBar) {
                         selectedTab = .cart
                     }
 
@@ -93,8 +94,10 @@ struct MainTabView: View {
                 maxHeight: .infinity
             )
 
-            CustomTabBar(selectedTab: $selectedTab)
-                .frame(maxWidth: .infinity)
+            if showTabBar {
+                CustomTabBar(selectedTab: $selectedTab)
+                    .frame(maxWidth: .infinity)
+            }
         }
         .ignoresSafeArea(edges: .bottom)
         .environment(wishlistViewModel)

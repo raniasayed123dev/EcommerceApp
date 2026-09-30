@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ProductColor: String {
+enum ProductColor: String, Hashable {
     case black = "Black"
     case white = "White"
     case beige = "Beige"
