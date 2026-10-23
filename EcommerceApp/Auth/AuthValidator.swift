@@ -11,31 +11,19 @@ import Foundation
 struct AuthValidator {
     
     static func validateName(_ name: String) -> String? {
-           
-           let nameParts = name
-               .trimmingCharacters(in: .whitespacesAndNewlines)
-               .split(separator: " ")
-           
-           if nameParts.isEmpty {
-               return "Please enter your name"
-           }
-           
-           if nameParts.count < 2 {
-               return "Please enter your full name"
-           }
-           
-        for part in nameParts {
-            if part.count < 2 {
-                return "Each name must be at least 2 characters"
-            }
-            
-            if !part.allSatisfy({ $0.isLetter }) {
-                return "Name can only contain letters"
-            }
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return "Please enter your name"
         }
-           
-           return nil
-       }
+        if trimmed.count < 2 {
+            return "Name must be at least 2 characters"
+        }
+        let lettersAndSpaces = CharacterSet.letters.union(.whitespaces)
+        if trimmed.unicodeScalars.contains(where: { !lettersAndSpaces.contains($0) }) {
+            return "Name can only contain letters"
+        }
+        return nil
+    }
     
     static func validateEmail(_ email: String) -> String? {
         
@@ -107,41 +95,15 @@ struct AuthValidator {
     }
     
     static func validatePassword(_ password: String) -> String? {
-        
         if password.isEmpty {
             return "Please enter your password"
         }
-        
         if password.contains(" ") {
             return "Password cannot contain spaces"
         }
-        
-        if password.count < 8 {
-            return "Password must be at least 8 characters"
+        if password.count < 6 {
+            return "Password must be at least 6 characters"
         }
-        
-        if !password.contains(where: { $0.isUppercase }) {
-            return "Password must contain an uppercase letter"
-        }
-        
-        if !password.contains(where: { $0.isLowercase }) {
-            return "Password must contain a lowercase letter"
-        }
-        
-        if !password.contains(where: { $0.isNumber }) {
-            return "Password must contain a number"
-        }
-        
-        let specialCharacters = CharacterSet(
-            charactersIn: "!@#$%^&*()_+-=[]{}|;:,.<>?"
-        )
-        
-        if !password.unicodeScalars.contains(where: {
-            specialCharacters.contains($0)
-        }) {
-            return "Password must contain a special character"
-        }
-        
         return nil
     }
     

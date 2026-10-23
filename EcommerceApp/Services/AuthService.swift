@@ -33,13 +33,17 @@ class AuthService {
 
         try await changeRequest.commitChanges()
 
-        try await Firestore.firestore()
-            .collection("users")
-            .document(user.uid)
-            .setData([
-                "name": name,
-                "email": email
-            ])
+        do {
+            try await Firestore.firestore()
+                .collection("users")
+                .document(user.uid)
+                .setData([
+                    "name": name,
+                    "email": email
+                ])
+        } catch {
+            print("⚠️ Warning: Firestore user write failed:", error.localizedDescription)
+        }
 
            }
     

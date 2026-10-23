@@ -20,12 +20,9 @@ final class SessionManager {
     var isAuthenticated: Bool = false
     var isSigningUp: Bool = false
     
-    var hasCompletedOnboarding: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "hasCompletedOnboarding")
+    var hasCompletedOnboarding: Bool = false {
+        didSet {
+            UserDefaults.standard.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding")
         }
     }
     
@@ -35,6 +32,9 @@ final class SessionManager {
     private init() {
         self.currentUser = Auth.auth().currentUser
         self.isAuthenticated = Auth.auth().currentUser != nil
+        
+        // Load persisted onboarding state; once completed or signed up, it won't appear again
+        self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
         
         self.authListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
@@ -58,9 +58,10 @@ final class SessionManager {
     func completeRegistration() {
         isSigningUp = false
         hasCompletedOnboarding = true
+        self.currentUser = Auth.auth().currentUser
         
         withAnimation(.easeInOut(duration: 0.35)) {
-            self.isAuthenticated = (Auth.auth().currentUser != nil)
+            self.isAuthenticated = true
         }
     }
     

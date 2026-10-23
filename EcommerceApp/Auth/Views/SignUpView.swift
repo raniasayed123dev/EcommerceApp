@@ -16,6 +16,7 @@ struct SignUpView: View {
        
     @State private var isAgreed: Bool = false
     @State private var isSignUpPressed = false
+    @State private var isLoading = false
     @State private var navigateToSuccess = false
     
     @State private var authViewModel = AuthViewModel()
@@ -55,6 +56,9 @@ struct SignUpView: View {
                     
                     // Title
                     VStack(alignment: .leading, spacing: 10) {
+                        
+                        Spacer()
+                            .frame(height: 10)
                         Text("Sign up")
                             .font(.title2)
                             .bold()
@@ -65,10 +69,10 @@ struct SignUpView: View {
                             .foregroundStyle(.gray)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 10)
+                   
                     
                     Spacer()
-                        .frame(height: 50)
+                        .frame(height: 40)
                     
                     // Text Fields
                     AuthTextField(
@@ -124,6 +128,8 @@ struct SignUpView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     Spacer()
+                        .frame(height: 30)
+
                     
                     // Terms & Conditions
                     HStack(spacing: 20) {
@@ -155,53 +161,62 @@ struct SignUpView: View {
                     // Sign Up Button
                     VStack(alignment: .center, spacing: 16) {
                         Button {
-                           
-                                isSignUpPressed = true
+                            isSignUpPressed = true
 
-                                let isValid = authViewModel.validateSignUp(
+                            let isValid = authViewModel.validateSignUp(
+                                name: name,
+                                email: email,
+                                password: password,
+                                confirmPassword: confirmPassword,
+                                isAgreed: isAgreed
+                            )
+
+                            if !isValid {
+                                isSignUpPressed = false
+                                return
+                            }
+
+                            isLoading = true
+                            SessionManager.shared.markSigningUp()
+
+                            Task {
+                                let success = await authViewModel.signUp(
                                     name: name,
                                     email: email,
-                                    password: password,
-                                    confirmPassword: confirmPassword,
-                                    isAgreed: isAgreed
+                                    password: password
                                 )
 
-                                if !isValid {
+                                isLoading = false
+                                if success {
+                                    navigateToSuccess = true
+                                } else {
+                                    SessionManager.shared.isSigningUp = false
                                     isSignUpPressed = false
-                                    return
                                 }
-
-                                SessionManager.shared.markSigningUp()
-
-                                Task {
-                                    let success = await authViewModel.signUp(
-                                        name: name,
-                                        email: email,
-                                        password: password
-                                    )
-
-                                    if success {
-                                        navigateToSuccess = true
-                                    } else {
-                                        SessionManager.shared.isSigningUp = false
-                                        isSignUpPressed = false
-                                    }
-                                }
+                            }
                         } label: {
-                            Text("Sign Up")
-                                .font(.headline)
-                                .foregroundStyle(isSignUpPressed ? .black : .white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(isSignUpPressed ? .white : .black)
-                                .clipShape(
-                                    RoundedRectangle(cornerRadius: 30)
-                                )
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 30)
-                                        .stroke(.black, lineWidth: 1)
+                            Group {
+                                if isLoading {
+                                    ProgressView()
+                                        .tint(isSignUpPressed ? .black : .white)
+                                } else {
+                                    Text("Sign Up")
+                                        .font(.headline)
+                                        .foregroundStyle(isSignUpPressed ? .black : .white)
                                 }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(isSignUpPressed ? .white : .black)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 30)
+                            )
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 30)
+                                    .stroke(.black, lineWidth: 1)
+                            }
                         }
+                        .disabled(isLoading)
                     }
                     .padding(.horizontal, 30)
                     .padding(.top, 50)
@@ -214,7 +229,7 @@ struct SignUpView: View {
             .onAppear {
                 isSignUpPressed = false
             }
-            .navigationDestination(isPresented: $navigateToSuccess) {
+            .fullScreenCover(isPresented: $navigateToSuccess) {
                 AccountSuccessView()
             }
             .padding(.top, 10)

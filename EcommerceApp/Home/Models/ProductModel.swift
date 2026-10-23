@@ -17,7 +17,7 @@ enum ProductColor: String, Hashable {
     case blue = "Blue"
 }
 
-enum ProductSize: String {
+enum ProductSize: String, Hashable {
     case small = "S"
     case medium = "M"
     case large = "L"
@@ -30,7 +30,7 @@ enum ProductSize: String {
     case oneSize = "One Size"
 }
 
-struct ProductModel: Identifiable {
+struct ProductModel: Identifiable, Hashable {
     let id = UUID()
     let imageName: String
     let productName: String

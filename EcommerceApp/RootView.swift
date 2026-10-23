@@ -15,14 +15,12 @@ struct RootView: View {
             if session.isAuthenticated {
                 MainTabView()
                     .transition(.opacity)
+            } else if !session.hasCompletedOnboarding {
+                SplashView()
+                    .transition(.opacity)
             } else {
-                if session.hasCompletedOnboarding {
-                    SplashScreen2View()
-                        .transition(.opacity)
-                } else {
-                    SplashView()
-                        .transition(.opacity)
-                }
+                SplashScreen2View()
+                    .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.35), value: session.isAuthenticated)

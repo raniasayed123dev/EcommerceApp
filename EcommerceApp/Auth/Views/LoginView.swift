@@ -47,6 +47,10 @@ struct LoginView: View {
                     // Login Content
                     VStack(alignment: .leading, spacing: 10) {
 
+                        
+                        Spacer()
+                            .frame(height: 50)
+
                         Text("Welcome Back")
                             .font(.title3)
                             .bold()
@@ -57,7 +61,7 @@ struct LoginView: View {
                             .foregroundStyle(.gray)
 
                         Spacer()
-                            .frame(height: 50)
+                            .frame(height:20)
 
                         AuthTextField(
                             title: "Email",
@@ -129,6 +133,8 @@ struct LoginView: View {
                         }
                         .disabled(!isLoginValid)
                         .opacity(isLoginValid ? 1 : 0.5)
+                        Spacer()
+                            .frame(height: 5)
 
                         Rectangle()
                             .foregroundStyle(.gray)
@@ -137,6 +143,10 @@ struct LoginView: View {
                                 Text("or")
                                     .font(.title2)
                             }
+                        Spacer()
+                            .frame(height: 5)
+
+                        
 
                         AuthButton(
                             title: "Continue with Facebook",
@@ -177,7 +187,7 @@ struct LoginView: View {
                             selectedButton = "Continue with Apple"
                         }
                     }
-                    .padding(.horizontal, 30)
+                    .padding(.horizontal, 16)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 10)
